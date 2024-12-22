@@ -17,10 +17,9 @@ logging.basicConfig(
 
 # Асинхронна функція для створення папки за розширенням
 async def ensure_folder(output_folder: Path, extension: str):
-    target_folder = output_folder / extension.lstrip('.')
+    target_folder = output_folder / (extension.lstrip('.') if extension else 'no_extension')
     target_folder.mkdir(parents=True, exist_ok=True)
     return target_folder
-
 
 # Асинхронне копіювання файлу
 async def copy_file(file: Path, target_folder: Path):
@@ -30,7 +29,6 @@ async def copy_file(file: Path, target_folder: Path):
         logging.info(f"Copied: {file} → {target_path}")
     except Exception as e:
         logging.error(f"Failed to copy {file}: {e}")
-
 
 # Асинхронне читання папки
 async def read_folder(source_folder: Path, output_folder: Path):
@@ -44,7 +42,6 @@ async def read_folder(source_folder: Path, output_folder: Path):
 
     if tasks:
         await asyncio.gather(*tasks)
-
 
 # Основна функція
 async def main():
@@ -63,7 +60,6 @@ async def main():
     output_folder.mkdir(parents=True, exist_ok=True)
     await read_folder(source_folder, output_folder)
     logging.info("File sorting completed successfully.")
-
 
 if __name__ == "__main__":
     try:
