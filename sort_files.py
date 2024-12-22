@@ -4,6 +4,8 @@ import aiofiles
 import logging
 from pathlib import Path
 import shutil
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
 
 # Налаштування логування
 logging.basicConfig(
@@ -43,9 +45,27 @@ async def read_folder(source_folder: Path, output_folder: Path):
     if tasks:
         await asyncio.gather(*tasks)
 
+# Клас для моніторингу змін у папці
+class FolderHandler(FileSystemEventHandler):
+    def __init__(self, source_folder: Path, output_folder: Path):
+        self.source_folder = source_folder
+        self.output_folder = output_folder
+
+    def on_created(self, event):
+        if event.is_directory:
+            return
+        file_path = Path(event.src_path)
+        logging.info(f"New file detected: {file_path}")
+        asyncio.run(self.process_file(file_path))
+
+    async def process_file(self, file_path: Path):
+        extension = file_path.suffix.lower() or "no_extension"
+        target_folder = await ensure_folder(self.output_folder, extension)
+        await copy_file(file_path, target_folder)
+
 # Основна функція
 async def main():
-    parser = argparse.ArgumentParser(description="Asynchronously sort files by extension.")
+    parser = argparse.ArgumentParser(description="Asynchronously sort files by extension with monitoring.")
     parser.add_argument('source', type=str, help="Source folder path")
     parser.add_argument('output', type=str, help="Output folder path")
     args = parser.parse_args()
@@ -59,7 +79,22 @@ async def main():
 
     output_folder.mkdir(parents=True, exist_ok=True)
     await read_folder(source_folder, output_folder)
-    logging.info("File sorting completed successfully.")
+
+    # Запуск Watchdog для моніторингу змін
+    event_handler = FolderHandler(source_folder, output_folder)
+    observer = Observer()
+    observer.schedule(event_handler, path=str(source_folder), recursive=True)
+    observer.start()
+    logging.info("Monitoring started. Press Ctrl+C to stop.")
+
+    try:
+        while True:
+            asyncio.sleep(1)
+    except KeyboardInterrupt:
+        observer.stop()
+        logging.info("Monitoring stopped.")
+
+    observer.join()
 
 if __name__ == "__main__":
     try:

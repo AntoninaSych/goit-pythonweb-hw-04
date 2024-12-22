@@ -2,3 +2,9 @@
 2024-12-22 22:26:44,045 [INFO]: Copied: source/image1.jpg → output/jpg/image1.jpg
 2024-12-22 22:26:44,046 [INFO]: Copied: source/image2.png → output/png/image2.png
 2024-12-22 22:26:44,046 [INFO]: File sorting completed successfully.
+2024-12-22 22:29:05,728 [INFO]: Copied: source/script.py → output/py/script.py
+2024-12-22 22:29:05,729 [INFO]: Copied: source/image1.jpg → output/jpg/image1.jpg
+2024-12-22 22:29:05,729 [INFO]: Copied: source/image2.png → output/png/image2.png
+2024-12-22 22:29:05,732 [INFO]: Monitoring started. Press Ctrl+C to stop.
+2024-12-22 22:29:23,843 [INFO]: New file detected: /Users/antonina/GOIT/web-python/goit-pythonweb-hw-04/source/new.txt
+2024-12-22 22:29:23,938 [INFO]: Copied: /Users/antonina/GOIT/web-python/goit-pythonweb-hw-04/source/new.txt → output/txt/new.txt
