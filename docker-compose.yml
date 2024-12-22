@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  file-sorter:
+    build: .
+    volumes:
+      - ./source:/app/source
+      - ./output:/app/output
+    command: ["./source", "./output"]
+    restart: "no"
